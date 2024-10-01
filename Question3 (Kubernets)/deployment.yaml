@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app-deployment
+spec:
+  replicas: 3 # Задаем 3 реплики, так как этого достаточно для обработки стабильной нагрузки
+  selector:
+    matchLabels:
+      app: web-app
+  template:
+    metadata:
+      labels:
+        app: web-app
+    spec:
+      containers:
+      - name: web-app-container
+        image: your-image:latest # образ приложения
+        resources:
+          requests:
+            cpu: "0.1" # Запрашиваем минимальный CPU для равномерной нагрузки после инициализации
+            memory: "128Mi" # Запрашиваем минимальное количество памяти для стабильного потребления
+          limits:
+            cpu: "1" # Задаем лимит CPU на случай нагрузки при первых запросах
+            memory: "256Mi" # Добавляем небольшой запас по памяти
+        ports:
+        - containerPort: 80
+        readinessProbe: # Настраиваем пробу готовности, чтобы под начал принимать запросы только после полной инициализации
+          httpGet:
+            path: /healthz # Эндпоинт проверки готовности приложения
+            port: 80
+          initialDelaySeconds: 10 # Задержка до первой проверки (учитываем 5-10 секунд на инициализацию)
+          periodSeconds: 5 # Проверка каждые 5 секунд
+        livenessProbe: # Проба для проверки работоспособности контейнера
+          httpGet:
+            path: /healthz
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 10
+      topologySpreadConstraints: # Распределение подов по разным нодам для отказоустойчивости
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app: web-app
+        minDomains: 2 # Обеспечиваем распределение минимум на две ноды
+      affinity:
+        podAntiAffinity: # Настройка анти аффинити для предотвращения размещения нескольких подов на одной ноде
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - web-app
+            topologyKey: "kubernetes.io/hostname" # Задаем ключ топологии для распределения по хостам
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-app-service
+spec:
+  selector:
+    app: web-app
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: ClusterIP # Внутренний сервис, доступный только в пределах кластера
