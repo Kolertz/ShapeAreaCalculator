@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34607.119
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeAreaCalculator", "ShapeAreaCalculator.csproj", "{963C4247-FF8B-4667-9949-16CBA7D31513}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeAreaCalculator", "ShapeAreaCalculator\ShapeAreaCalculator.csproj", "{963C4247-FF8B-4667-9949-16CBA7D31513}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeAreaCalculator.Tests", "..\ShapeAreaCalculator.Tests\ShapeAreaCalculator.Tests.csproj", "{082C5240-29E0-4D02-9A38-95AF71B9C883}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeAreaCalculator.Tests", "ShapeAreaCalculator.Tests\ShapeAreaCalculator.Tests.csproj", "{082C5240-29E0-4D02-9A38-95AF71B9C883}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
